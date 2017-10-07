@@ -19,12 +19,13 @@ FROM clovers AS c';
     my @p;
 
     if (my @tags = @{$c->validation->output->{'tag'}}) {
-        $q .= ', tags AS t, clovers_tags AS r
-WHERE c.id = r.clover_id
-AND r.tag_id = t.id';
+        my $t_filter = ' c.id IN (SELECT clover_id FROM clovers_tags AS r, tags AS t WHERE r.tag_id = t.id AND t.name = ?) ';
 
-        $q .= ' AND t.name = ?' for @tags;
-            # don't work as expected: need a fix
+        $q .= 'WHERE' . $t_filter;
+
+        push @p, shift @tags;
+
+        $q .= 'AND' . $t_filter for @tags;
 
         push @p, @tags;
     }
