@@ -19,13 +19,13 @@ FROM clovers c';
     my @p;
 
     if (my @tags = @{$c->validation->output->{'tag'}}) {
-        my $t_filter = ' c.id IN (SELECT clover_id FROM clovers_tags r, tags t WHERE r.tag_id = t.id AND t.name = ?) ';
+        my $t_filter = ' c.id IN (SELECT clover_id FROM clovers_tags r, tags t WHERE r.tag_id = t.id AND t.name = ?)';
 
-        $q .= 'WHERE' . $t_filter;
+        $q .= ' WHERE' . $t_filter;
 
         push @p, shift @tags;
 
-        $q .= 'AND' . $t_filter for @tags;
+        $q .= ' AND' . $t_filter for @tags;
 
         push @p, @tags;
     }
