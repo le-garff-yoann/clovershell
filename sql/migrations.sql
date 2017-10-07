@@ -61,7 +61,7 @@ CREATE FUNCTION compute_clover_score_on_plays_change() RETURNS TRIGGER AS $compu
         ko INT := 0;
     BEGIN
         FOR r IN SELECT return_code, count(*) AS count FROM plays WHERE clover_id = NEW.clover_id GROUP BY return_code LOOP
-            IF (r.return_code = 0)THEN
+            IF (r.return_code = 0) THEN
                 ok := r.count;
             ELSE
                 ko := ko + r.count;

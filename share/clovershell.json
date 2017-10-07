@@ -1,9 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "contact": {
-      "name": "Yoann Le Garff"
-    },
+    "contact": { "name": "Yoann Le Garff" },
     "description": "https://github.com/le-garff-yoann/clovershell-server",
     "license": {
       "name": "Apache License, Version 2.0",
@@ -13,39 +11,24 @@
     "version": "0.1.0"
   },
   "basePath": "/api",
-  "produces": [
-    "application/json"
-  ],
-  "consumes": [
-    "application/json"
-  ],
+  "produces": [ "application/json" ],
+  "consumes": [ "application/json" ],
   "definitions": {
     "error": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "error"
-      ],
+      "required": [ "error" ],
       "properties": {
-        "error": {
-          "type": "string"
-        }
+        "error": { "type": "string" }
       }
     },
     "tag": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "name",
-        "description"
-      ],
+      "required": [ "name", "description" ],
       "properties": {
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        }
+        "name": { "type": "string" },
+        "description": { "type": "string" }
       }
     },
     "cloverScore": {
@@ -62,17 +45,10 @@
       "schema": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "username",
-          "password"
-        ],
+        "required": [ "username", "password" ],
         "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          }
+          "username": { "type": "string" },
+          "password": { "type": "string" }
         }
       }
     },
@@ -98,34 +74,24 @@
   "responses": {
     "error": {
       "description": "Self sufficient",
-      "schema": {
-        "$ref": "#/definitions/error"
-      }
+      "schema": { "$ref": "#/definitions/error" }
     },
-    "unauthorized": {
-      "description": "Self sufficient"
-    }
+    "unauthorized": { "description": "Self sufficient" }
   },
   "paths": {
     "/clovers": {
       "get": {
         "operationId": "listClovers",
         "x-mojo-to": "Controller::OpenAPI::Clover#list",
-        "tags": [
-          "clover"
-        ],
+        "tags": [ "clover" ],
         "parameters": [
           {
             "name": "tag",
             "in": "query",
             "type": "array",
             "collectionFormat": "multi",
-            "items": {
-              "type": "string"
-            },
-            "default": [
-
-            ]
+            "items": { "type": "string" },
+            "default": []
           }
         ],
         "responses": {
@@ -136,35 +102,22 @@
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "name",
-                  "description"
-                ],
+                "required": [ "name", "description" ],
                 "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "score": {
-                    "$ref": "#/definitions/cloverScore"
-                  }
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "score": { "$ref": "#/definitions/cloverScore" }
                 }
               }
             }
           },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "default": { "$ref": "#/responses/error" }
         }
       },
       "post": {
         "operationId": "createClover",
         "x-mojo-to": "Controller::OpenAPI::Clover#create",
-        "tags": [
-          "clover"
-        ],
+        "tags": [ "clover" ],
         "parameters": [
           {
             "name": "clover",
@@ -173,32 +126,18 @@
             "schema": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "name",
-                "description",
-                "template"
-              ],
+              "required": [ "name", "description", "template" ],
               "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                },
-                "template": {
-                  "type": "string"
-                }
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "template": { "type": "string" }
               }
             }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "201": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       }
     },
@@ -206,57 +145,32 @@
       "get": {
         "operationId": "readClover",
         "x-mojo-to": "Controller::OpenAPI::Clover#read",
-        "tags": [
-          "clover"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/cloverName"
-          }
-        ],
+        "tags": [ "clover" ],
+        "parameters": [{ "$ref": "#/parameters/cloverName" }],
         "responses": {
           "200": {
             "description": "Self sufficient",
             "schema": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "name",
-                "description",
-                "template",
-                "score"
-              ],
+              "required": [ "name", "description", "template", "score" ],
               "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                },
-                "template": {
-                  "type": "string"
-                },
-                "score": {
-                  "$ref": "#/definitions/cloverScore"
-                }
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "template": { "type": "string" },
+                "score": { "$ref": "#/definitions/cloverScore" }
               }
             }
           },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "default": { "$ref": "#/responses/error" }
         }
       },
       "put": {
         "operationId": "updateClover",
         "x-mojo-to": "Controller::OpenAPI::Clover#update",
-        "tags": [
-          "clover"
-        ],
+        "tags": [ "clover" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/cloverName"
-          },
+          { "$ref": "#/parameters/cloverName" },
           {
             "name": "clover",
             "in": "body",
@@ -265,40 +179,24 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "description": {
-                  "type": "string"
-                }
+                "description": { "type": "string" }
               }
             }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "200": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       },
       "delete": {
         "operationId": "deleteClover",
         "x-mojo-to": "Controller::OpenAPI::Clover#delete",
-        "tags": [
-          "clover"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/cloverName"
-          }
-        ],
+        "tags": [ "clover" ],
+        "parameters": [{ "$ref": "#/parameters/cloverName" }],
         "responses": {
-          "200": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "200": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       }
     },
@@ -306,76 +204,43 @@
       "get": {
         "operationId": "listTagsAttachToClover",
         "x-mojo-to": "Controller::OpenAPI::Clover#list_attached_tags",
-        "tags": [
-          "clover",
-          "tag"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/cloverName"
-          }
-        ],
+        "tags": [ "clover", "tag" ],
+        "parameters": [{ "$ref": "#/parameters/cloverName" }],
         "responses": {
           "200": {
             "description": "Self sufficient",
             "schema": {
               "type": "array",
-              "items": {
-                "$ref": "#/definitions/tag"
-              }
+              "items": { "$ref": "#/definitions/tag" }
             }
           },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "default": { "$ref": "#/responses/error" }
         }
       },
       "put": {
         "operationId": "attachCloverToTag",
         "x-mojo-to": "Controller::OpenAPI::Clover#attach_tag",
-        "tags": [
-          "clover",
-          "tag"
-        ],
+        "tags": [ "clover", "tag" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/cloverName"
-          },
-          {
-            "$ref": "#/parameters/tagNameInQuery"
-          }
+          { "$ref": "#/parameters/cloverName" },
+          { "$ref": "#/parameters/tagNameInQuery" }
         ],
         "responses": {
-          "200": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "200": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       },
       "delete": {
         "operationId": "detachCloverFromTag",
         "x-mojo-to": "Controller::OpenAPI::Clover#detach_tag",
-        "tags": [
-          "clover",
-          "tag"
-        ],
+        "tags": [ "clover", "tag" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/cloverName"
-          },
-          {
-            "$ref": "#/parameters/tagNameInQuery"
-          }
+          { "$ref": "#/parameters/cloverName" },
+          { "$ref": "#/parameters/tagNameInQuery" }
         ],
         "responses": {
-          "200": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "200": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       }
     },
@@ -383,14 +248,9 @@
       "get": {
         "operationId": "listPlaysForClover",
         "x-mojo-to": "Controller::OpenAPI::Clover#list_plays",
-        "tags": [
-          "clover",
-          "play"
-        ],
+        "tags": [ "clover", "play" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/cloverName"
-          },
+          { "$ref": "#/parameters/cloverName" },
           {
             "name": "started_after",
             "in": "query",
@@ -401,12 +261,8 @@
             "in": "query",
             "type": "array",
             "collectionFormat": "multi",
-            "items": {
-              "type": "integer"
-            },
-            "default": [
-
-            ]
+            "items": { "type": "integer" },
+            "default": []
           }
         ],
         "responses": {
@@ -417,44 +273,25 @@
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "id",
-                  "started_at",
-                  "return_code"
-                ],
+                "required": [ "id", "started_at", "return_code" ],
                 "properties": {
-                  "id": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "started_at": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "return_code": {
-                    "type": "integer"
-                  }
+                  "id": { "type": "integer", "minimum": 0 },
+                  "started_at": { "type": "string", "format": "date-time" },
+                  "return_code": { "type": "integer" }
                 }
               }
             }
           },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "default": { "$ref": "#/responses/error" }
         }
       },
       "post": {
         "operationId": "createPlayForClover",
         "x-mojo-to": "Controller::OpenAPI::Clover#create_play",
         "x-clovershell-protected": true,
-        "tags": [
-          "clover",
-          "play"
-        ],
+        "tags": [ "clover", "play" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/cloverName"
-          },
+          { "$ref": "#/parameters/cloverName" },
           {
             "name": "play",
             "in": "body",
@@ -462,26 +299,12 @@
             "schema": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "started_at",
-                "return_code",
-                "stdout",
-                "stderr"
-              ],
+              "required": [ "started_at", "return_code", "stdout", "stderr" ],
               "properties": {
-                "started_at": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "return_code": {
-                  "type": "integer"
-                },
-                "stdout": {
-                  "type": "string"
-                },
-                "stderr": {
-                  "type": "string"
-                }
+                "started_at": { "type": "string", "format": "date-time" },
+                "return_code": { "type": "integer" },
+                "stdout": { "type": "string" },
+                "stderr": { "type": "string" }
               }
             }
           }
@@ -492,23 +315,14 @@
             "schema": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "id"
-              ],
+              "required": [ "id" ],
               "properties": {
-                "id": {
-                  "type": "integer",
-                  "minimum": 0
-                }
+                "id": { "type": "integer", "minimum": 0 }
               }
             }
           },
-          "401": {
-            "$ref": "#/responses/unauthorized"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "401": { "$ref": "#/responses/unauthorized" },
+          "default": { "$ref": "#/responses/error" }
         }
       }
     },
@@ -516,14 +330,9 @@
       "get": {
         "operationId": "readPlayForClover",
         "x-mojo-to": "Controller::OpenAPI::Clover#read_play",
-        "tags": [
-          "clover",
-          "play"
-        ],
+        "tags": [ "clover", "play" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/cloverName"
-          },
+          { "$ref": "#/parameters/cloverName" },
           {
             "name": "playId",
             "in": "path",
@@ -538,35 +347,17 @@
             "schema": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "id",
-                "started_at",
-                "return_code"
-              ],
+              "required": [ "id", "started_at", "return_code" ],
               "properties": {
-                "id": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "started_at": {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                "return_code": {
-                  "type": "integer"
-                },
-                "stdout": {
-                  "type": "string"
-                },
-                "stderr": {
-                  "type": "string"
-                }
+                "id": { "type": "integer", "minimum": 0 },
+                "started_at": { "type": "string", "format": "date-time" },
+                "return_code": { "type": "integer" },
+                "stdout": { "type": "string" },
+                "stderr": { "type": "string" }
               }
             }
           },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "default": { "$ref": "#/responses/error" }
         }
       }
     },
@@ -574,9 +365,7 @@
       "get": {
         "operationId": "listTags",
         "x-mojo-to": "Controller::OpenAPI::Tag#list",
-        "tags": [
-          "tag"
-        ],
+        "tags": [ "tag" ],
         "responses": {
           "200": {
             "description": "Self sufficient",
@@ -585,49 +374,32 @@
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "name",
-                  "description"
-                ],
+                "required": [ "name", "description" ],
                 "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  }
+                  "name": { "type": "string" },
+                  "description": { "type": "string" }
                 }
               }
             }
           },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "default": { "$ref": "#/responses/error" }
         }
       },
       "post": {
         "operationId": "createTag",
         "x-mojo-to": "Controller::OpenAPI::Tag#create",
-        "tags": [
-          "tag"
-        ],
+        "tags": [ "tag" ],
         "parameters": [
           {
             "name": "tag",
             "in": "body",
             "required": true,
-            "schema": {
-              "$ref": "#/definitions/tag"
-            }
+            "schema": { "$ref": "#/definitions/tag" }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "201": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       }
     },
@@ -635,36 +407,24 @@
       "get": {
         "operationId": "readTag",
         "x-mojo-to": "Controller::OpenAPI::Tag#read",
-        "tags": [
-          "tag"
-        ],
+        "tags": [ "tag" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/tagName"
-          }
+          { "$ref": "#/parameters/tagName" }
         ],
         "responses": {
           "200": {
             "description": "Self sufficient",
-            "schema": {
-              "$ref": "#/definitions/tag"
-            }
+            "schema": { "$ref": "#/definitions/tag" }
           },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "default": { "$ref": "#/responses/error" }
         }
       },
       "put": {
         "operationId": "updateTag",
         "x-mojo-to": "Controller::OpenAPI::Tag#update",
-        "tags": [
-          "tag"
-        ],
+        "tags": [ "tag" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/tagName"
-          },
+          { "$ref": "#/parameters/tagName" },
           {
             "name": "tag",
             "in": "body",
@@ -673,43 +433,27 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                }
+                "name": { "type": "string" },
+                "description": { "type": "string" }
               }
             }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "200": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       },
       "delete": {
         "operationId": "deleteTag",
         "x-mojo-to": "Controller::OpenAPI::Tag#delete",
-        "tags": [
-          "tag"
-        ],
+        "tags": [ "tag" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/tagName"
-          }
+          { "$ref": "#/parameters/tagName" }
         ],
         "responses": {
-          "200": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "200": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       }
     },
@@ -717,24 +461,14 @@
       "post": {
         "operationId": "loginUser",
         "x-mojo-to": "Controller::OpenAPI::User#login",
-        "tags": [
-          "user"
-        ],
+        "tags": [ "user" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/userinfo"
-          }
+          { "$ref": "#/parameters/userinfo" }
         ],
         "responses": {
-          "201": {
-            "description": "Self sufficient"
-          },
-          "401": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "201": { "description": "Self sufficient" },
+          "401": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       }
     },
@@ -742,19 +476,11 @@
       "delete": {
         "operationId": "logoutUser",
         "x-mojo-to": "Controller::OpenAPI::User#logout",
-        "tags": [
-          "user"
-        ],
+        "tags": [ "user" ],
         "responses": {
-          "200": {
-            "description": "Self sufficient"
-          },
-          "400": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "200": { "description": "Self sufficient" },
+          "400": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       }
     },
@@ -762,21 +488,13 @@
       "post": {
         "operationId": "registerUser",
         "x-mojo-to": "Controller::OpenAPI::User#register",
-        "tags": [
-          "user"
-        ],
+        "tags": [ "user" ],
         "parameters": [
-          {
-            "$ref": "#/parameters/userinfo"
-          }
+          { "$ref": "#/parameters/userinfo" }
         ],
         "responses": {
-          "201": {
-            "description": "Self sufficient"
-          },
-          "default": {
-            "$ref": "#/responses/error"
-          }
+          "201": { "description": "Self sufficient" },
+          "default": { "$ref": "#/responses/error" }
         }
       }
     }
