@@ -14,12 +14,12 @@ sub list {
 
     my $q = '
 SELECT c.name, c.description, c.score
-FROM clovers AS c';
+FROM clovers c';
 
     my @p;
 
     if (my @tags = @{$c->validation->output->{'tag'}}) {
-        my $t_filter = ' c.id IN (SELECT clover_id FROM clovers_tags AS r, tags AS t WHERE r.tag_id = t.id AND t.name = ?) ';
+        my $t_filter = ' c.id IN (SELECT clover_id FROM clovers_tags r, tags t WHERE r.tag_id = t.id AND t.name = ?) ';
 
         $q .= 'WHERE' . $t_filter;
 
@@ -112,7 +112,7 @@ sub list_attached_tags {
 
     $c->pg->db->query('
 SELECT t.name, t.description
-FROM clovers AS c, tags AS t, clovers_tags AS r
+FROM clovers c, tags t, clovers_tags r
 WHERE c.id = r.clover_id
 AND r.tag_id = t.id
 AND c.name = ?;', $c->validation->param('cloverName'), sub {
@@ -174,7 +174,7 @@ sub list_plays {
 
     my $q = '
 SELECT p.id, p.started_at, p.return_code
-FROM plays AS p, clovers AS c
+FROM plays p, clovers c
 WHERE p.clover_id = c.id
 AND c.name = ?';
 
