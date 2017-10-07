@@ -1,0 +1,18 @@
+---
+image: perl:5.26
+stages:
+  - test
+test:
+  stage: test
+  services:
+    - postgres:9.6
+  variables:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    TEST_PG_DSN: postgresql://postgres:postgres@postgres/postgres
+  before_script:
+    - apt-get update
+    - apt-get install -y libpq-dev
+  script:
+    - cpanm --installdeps -n .
+    - prove -l

@@ -1,0 +1,37 @@
+#!/usr/bin/env perl
+
+# Copyright (C) 2017-2018 Yoann Le Garff
+# clovershell-server is licensed under the Apache License, Version 2.0
+
+use strict;
+use warnings;
+
+use FindBin;
+
+BEGIN {
+    unshift @INC, $FindBin::Bin . '/../lib';
+}
+
+use Mojolicious::Commands;
+
+Mojolicious::Commands->start_app('Clovershell::Server');
+
+__END__
+
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+clovershell-server - Run Clovershell::Server
+
+=head1 COPYRIGHT
+
+Copyright (C) 2017-2018 Yoann Le Garff
+
+=head1 LICENSE
+
+clovershell-server is licensed under the Apache License, Version 2.0
+
+=cut
