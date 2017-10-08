@@ -1,18 +1,35 @@
 ---
-image: perl:5.26
 stages:
   - test
+  - image 
+
 test:
-  stage: test
+  image: perl:5.26
   services:
     - postgres:9.6
   variables:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: postgres
     TEST_PG_DSN: postgresql://postgres:postgres@postgres/postgres
+  stage: test
   before_script:
     - apt-get update
     - apt-get install -y libpq-dev
   script:
     - cpanm --installdeps -n .
     - prove -l
+
+release:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: image 
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - master
+
