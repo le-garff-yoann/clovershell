@@ -1,8 +1,6 @@
 {
   "swagger": "2.0",
   "info": {
-    "contact": { "name": "Yoann Le Garff" },
-    "description": "https://github.com/le-garff-yoann/clovershell-server",
     "license": {
       "name": "Apache License, Version 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
