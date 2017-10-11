@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2018 Yoann Le Garff
+# Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 # clovershell-server is licensed under the Apache License, Version 2.0
 
 package Clovershell::Server::Controller::OpenAPI::Clover;
@@ -317,7 +317,7 @@ Clovershell::Server::Controller::OpenAPI::Clover
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2018 Yoann Le Garff
+Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 
 =head1 LICENSE
 

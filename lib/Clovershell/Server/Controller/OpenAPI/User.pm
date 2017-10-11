@@ -107,7 +107,7 @@ Clovershell::Server::Controller::OpenAPI::User
 
 =head1 COPYRIGHT
 
-Copyright (C) 2017-2018 Yoann Le Garff
+Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 
 =head1 LICENSE
 

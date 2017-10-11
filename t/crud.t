@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2018 Yoann Le Garff
+# Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 # clovershell-server is licensed under the Apache License, Version 2.0
 
 use Mojo::Base -strict;
