@@ -27,7 +27,7 @@ sub startup {
 
 
     $self->helper(pg => sub { state $pg = Mojo::Pg->new(shift->config('pg')) });
-    $self->helper('clovershell.openapi.url' => sub { state $p = $self->home->child('share', 'clovershell.json') });
+    $self->helper('clovershell.openapi.url' => sub { state $p = shift->app->home->child('share', 'clovershell.json') });
 
     $self->plugin(Bcrypt => { cost => 8 });
 
