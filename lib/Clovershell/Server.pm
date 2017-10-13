@@ -25,7 +25,6 @@ sub startup {
     $self->log->fatal('maximum_users must be >= 0') unless isint($self->config('maximum_users')) and $self->config('maximum_users') >= 0;
     $self->config('pg') // $self->log->fatal('pg must be defined');
 
-
     $self->helper(pg => sub { state $pg = Mojo::Pg->new(shift->config('pg')) });
     $self->helper('clovershell.openapi.url' => sub { state $p = shift->app->home->child('share', 'clovershell.json') });
 
@@ -51,7 +50,7 @@ sub startup {
 
         $c->render_later;
 
-        $c->pg->db->select('users', ['*'], { username => $username }, sub {
+        $c->pg->db->select('users', [ '*' ], { username => $username }, sub {
             my ($db, $err, $r) = @_;
 
             return $c->render(openapi => { error => $err }, status => 500) if $err;
