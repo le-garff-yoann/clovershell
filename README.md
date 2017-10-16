@@ -1,22 +1,17 @@
-clovershell-server
-==================
+# clovershell-server
 
-Installation and usage
-----------------------
+## Installation and usage
 
 http://mojolicious.org/perldoc/Mojolicious/Guides/Cookbook#DEPLOYMENT
 
-Configuration
--------------
+## Configuration
 
 The configuration is done via [this file](clovershell-server.conf).
 
-Copyright
----------
+## Copyright
 
 Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 
-License
--------
+## License
 
 clovershell-server is licensed under the Apache License, Version 2.0
