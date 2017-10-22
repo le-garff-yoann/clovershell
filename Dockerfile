@@ -14,5 +14,4 @@ ENV MOJO_MODE production
 
 EXPOSE 8080 8443
 
-ENTRYPOINT [ "hypnotoad" ]
-CMD [ "-f", "./script/clovershell" ]
+CMD [ "hypnotoad", "-f", "script/clovershell" ]

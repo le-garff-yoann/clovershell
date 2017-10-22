@@ -1,36 +1,55 @@
 ---
+image: docker:latest
+
 stages:
+  - build
   - test
-  - image 
+  - release 
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+
+build:
+  stage: build
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
 test:
-  image: perl:5.26
-  services:
-    - postgres:9.6
-  variables:
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: postgres
-    TEST_PG_DSN: postgresql://postgres:postgres@postgres/postgres
   stage: test
-  before_script:
-    - apt-get update
-    - apt-get install -y libpq-dev
+  variables:
+    POSTGRES_IMAGE: postgres:9.6
   script:
-    - cpanm --installdeps -n .
-    - prove -l
+    - docker pull $POSTGRES_IMAGE
+    - >
+      docker run -d --name pg
+      -e "POSTGRES_USER=pg"
+      -e "POSTGRES_PASSWORD=pg"
+      $POSTGRES_IMAGE
+    - >
+      until
+      docker run --rm --link pg -e "PGPASSWORD=pg" $POSTGRES_IMAGE
+      psql -U pg -h pg -d pg -c "select 1";
+      do
+      sleep 1;
+      done
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - >
+      docker run
+      --link pg
+      -e "TEST_PG_DSN=postgresql://pg:pg@pg/pg"
+      $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+      prove -l
 
 release:
-  image: docker:latest
-  services:
-    - docker:dind
-  stage: image 
-  before_script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  stage: release
   script:
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA -t $CI_REGISTRY_IMAGE:latest .
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - docker push $CI_REGISTRY_IMAGE:latest # https://github.com/docker/cli/pull/458 (push multiple docker images with `docker push`)
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA 
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
   allow_failure: true
   only:
     - master
-
