@@ -16,7 +16,7 @@ package t::Clovershell::OpenAPI::Client {
 
         my %o = ( t => Test::Mojo->new(@_) );
 
-        $o{o} = OpenAPI::Client->new($o{t}->app->clovershell->openapi->url, { # couldn't use a url: the ua used in the constructor block the event loop that is running the test server ...
+        $o{o} = OpenAPI::Client->new($o{t}->app->clovershell->openapi->url, { # couldn't use a url: the ua used in the constructor block the event loop that is running the test server...
             app => $o{t}->ua->server->app
         });
 
