@@ -5,37 +5,23 @@ package Clovershell::Server::Controller::OpenAPI::Clover;
 
 use Mojo::Base 'Mojolicious::Controller';
 
-use Scalar::Util 'blessed';
+use Clovershell::Server::Model::Clovers;
+
+has model => sub {
+    state $m = Clovershell::Server::Model::Clovers->new(pg => shift->helpers->pg);
+};
 
 sub list {
     my $c = shift->openapi->valid_input or return;
 
     $c->render_later;
 
-    my $q = '
-SELECT c.name, c.description, c.score
-FROM clovers c';
-
-    my @p;
-
-    if (my @tags = @{$c->validation->output->{'tag'}}) {
-        my $t_filter = ' c.id IN (SELECT clover_id FROM clovers_tags r, tags t WHERE r.tag_id = t.id AND t.name = ?)';
-
-        $q .= ' WHERE' . $t_filter;
-
-        push @p, shift @tags;
-
-        $q .= ' AND' . $t_filter for @tags;
-
-        push @p, @tags;
-    }
-
-    $c->pg->db->query($q . ' ORDER BY c.score ASC;', @p, sub {
+    $c->model->list(tags => $c->validation->output->{tag}, cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
 
-        $c->render(openapi => [ $r->hashes->each ]);
+        $c->render(openapi => [ map { { name => $_->{name}, description => $_->{description}, score => $_->{score} } } $r->hashes->each ]);
     });
 }
 
@@ -44,7 +30,7 @@ sub create {
 
     $c->render_later;
 
-    $c->pg->db->insert('clovers', $c->validation->param('clover'), sub {
+    $c->model->create(data => $c->validation->param('clover'), cb => sub {
         my ($db, $err, $r) = @_;
 
         if ($err) {
@@ -62,7 +48,7 @@ sub read {
 
     $c->render_later;
 
-    $c->pg->db->select('clovers', [ '*' ], { name => $c->validation->param('cloverName') }, sub {
+    $c->model->read(name => $c->validation->param('cloverName'), cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
@@ -80,7 +66,7 @@ sub update {
 
     $c->render_later;
 
-    $c->pg->db->update('clovers', $c->validation->param('clover'), { name => $c->validation->param('cloverName') }, sub {
+    $c->model->update(name => $c->validation->param('cloverName'), data => $c->validation->param('clover'), cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
@@ -95,7 +81,7 @@ sub delete {
 
     $c->render_later;
 
-    $c->pg->db->delete('clovers', { name => $c->validation->param('cloverName') }, sub {
+    $c->model->delete(name => $c->validation->param('cloverName'), cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
@@ -110,12 +96,7 @@ sub list_attached_tags {
 
     $c->render_later;
 
-    $c->pg->db->query('
-SELECT t.name, t.description
-FROM clovers c, tags t, clovers_tags r
-WHERE c.id = r.clover_id
-AND r.tag_id = t.id
-AND c.name = ?;', $c->validation->param('cloverName'), sub {
+    $c->model->list_attached_tags(name => $c->validation->param('cloverName'), cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
@@ -129,12 +110,10 @@ sub attach_tag {
 
     $c->render_later;
 
-    $c->pg->db->query('
-INSERT INTO clovers_tags
-VALUES ((SELECT id FROM clovers WHERE name = ?), (SELECT id FROM tags WHERE name = ?));', $c->validation->param('cloverName'), $c->validation->param('tag'), sub {
+    $c->model->attach_tag(name => $c->validation->param('cloverName'), tag => $c->validation->param('tag'), cb => sub {
         my ($db, $err, $r) = @_;
 
-        if ($err) { # TODO: need tests
+        if ($err) {
             return $c->render(openapi => { error => 'Already exists' }, status => 409) if $err =~ /already exists/i;
             return $c->render(openapi => { error => 'Clover or tag not found' }, status => 404) if $err =~ /violates not-null constraint/i;
 
@@ -150,14 +129,7 @@ sub detach_tag {
 
     $c->render_later;
 
-    $c->pg->db->query('
-DELETE FROM clovers_tags
-WHERE clover_id = (
-    SELECT id FROM clovers WHERE name = ?
-)
-AND tag_id = (
-    SELECT id FROM tags WHERE name = ?
-);', $c->validation->param('cloverName'), $c->validation->param('tag'), sub {
+    $c->model->detach_tag(name => $c->validation->param('cloverName'), tag => $c->validation->param('tag'), cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
@@ -172,33 +144,18 @@ sub list_plays {
 
     $c->render_later;
 
-    my $q = '
-SELECT p.id, p.started_at, p.return_code
-FROM plays p, clovers c
-WHERE p.clover_id = c.id
-AND c.name = ?';
+    $c->model->list_plays(
+        name => $c->validation->param('cloverName'),
+        started_after => $c->validation->param('started_after'),
+        return_codes => $c->validation->output->{return_code},
+        cb => sub {
+            my ($db, $err, $r) = @_;
 
-    my @p = ($c->validation->param('cloverName'));
+            return $c->render(openapi => { error => $err }, status => 500) if $err;
 
-    if (defined (my $started_after = $c->validation->param('started_after'))) {
-        push @p, $started_after;
-
-        $q .= ' AND p.started_at::TIMESTAMP >= ?';
-    }
-
-    if (my @return_codes = @{$c->validation->output->{'return_code'}}) {
-        push @p, @return_codes;
-
-        $q .= ' AND p.return_code IN (' . join(',', ('?') x @return_codes) . ')';
-    }
-
-    $c->pg->db->query($q . ' ORDER BY p.started_at ASC;', @p, sub {
-        my ($db, $err, $r) = @_;
-
-        return $c->render(openapi => { error => $err }, status => 500) if $err;
-
-        $c->render(openapi => [ $r->hashes->each ]);
-    });
+            $c->render(openapi => [ $r->hashes->each ]);
+        }
+    );
 }
 
 sub create_play {
@@ -206,57 +163,17 @@ sub create_play {
 
     $c->render_later;
 
-    my $username = $c->session('username') // $c->req->url->to_abs->username;
+    $c->model->create_play(
+        name => $c->validation->param('cloverName'),
+        username => $c->session('username') // $c->req->url->to_abs->username,
+        data => $c->validation->param('play')
+    )->then(sub {
+        $c->render(openapi => { id => shift }, status => 201);
+    })->catch(sub {
+        my $err = shift;
 
-    my $db = $c->pg->db;
-
-    my $tx = $db->begin;
-
-    Mojo::IOLoop->delay(
-        sub {
-            $c->pg->db->select('clovers', [ 'id' ], { name => $c->validation->param('cloverName') }, shift->begin);
-        },
-        sub {
-            my ($d, $err, $r) = @_;
-
-            die { openapi => { error => $err }, status => 500 } if $err;
-
-            my $clover_id = $r->hash->{id} // die { openapi => { error => 'Clover not found' }, status => 404 };
-
-            $c->pg->db->select('users', [ 'id' ], { username => $username }, $d->begin);
-
-            $db->insert('plays', {
-                %{$c->validation->param('play')},
-                %{{
-                    clover_id => $clover_id
-                }}
-            }, { returning => 'id' }, $d->begin);
-        },
-        sub {
-            my ($d, $err1, $r1, $err2, $r2) = @_;
-
-            die { openapi => { error => $err1 }, status => 500 } if $err1;
-            die { openapi => { error => $err2 }, status => 500 } if $err2;
-
-            my $user_id = $r1->hash->{id} // die { openapi => { error => 'User not found' }, status => 404 };
-
-            $d->data(play_id => $r2->hash->{id});
-
-            $db->insert('plays_users', { 'play_id' => $d->data('play_id'), 'user_id' => $user_id }, $d->begin);
-        }, sub {
-            my ($d, $err, $r) = @_;
-
-            die { openapi => { error => $err }, status => 500 } if $err;
-
-            $tx->commit;
-
-            $c->render(openapi => { id => $d->data('play_id') }, status => 201);
-        }
-    )->catch(sub {
-        my ($d, $err) = @_;
-
-        if (ref $err eq 'HASH' and exists $err->{openapi}) {
-            $c->render(%{$err});
+        if (ref $err eq 'HASH' and exists $err->{error} and exists $err->{status}) {
+            $c->render(openapi => { error => $err->{error} }, status => $err->{status});
         } else {
             $c->render(openapi => { error => $err }, status => 500);
         }
@@ -268,35 +185,20 @@ sub read_play {
 
     $c->render_later;
 
-    my $q = 'SELECT p.id, p.started_at, p.return_code';
-    my @p = ($c->validation->param('playId'), $c->validation->param('cloverName'));
+    $c->model->read_play(
+        name => $c->validation->param('cloverName'),
+        play_id => $c->validation->param('playId'),
+        username => $c->session('username') // $c->req->url->to_abs->username,
+        cb => sub {
+            my ($db, $err, $r) = @_;
 
-    if (defined (my $username = $c->session('username') // $c->req->url->to_abs->username)) {
-        $q .= ', p.stdout, p.stderr FROM plays p, clovers c, users u, plays_users r
-WHERE p.id = ?
-AND p.clover_id = c.id
-AND c.name = ?
-AND p.id = r.play_id
-AND r.user_id = u.id
-AND u.username = ?;';
+            return $c->render(openapi => { error => $err }, status => 500) if $err;
 
-        push @p, $username;
-    } else {
-        $q .= ' FROM plays p, clovers c
-WHERE p.id = ?
-AND p.clover_id = c.id
-AND c.name = ?;';
-    }
+            my $d = $r->hashes->first or return $c->render(openapi => { error => 'Not found' }, status => 404);
 
-    $c->pg->db->query($q, @p, sub {
-        my ($db, $err, $r) = @_;
-
-        return $c->render(openapi => { error => $err }, status => 500) if $err;
-
-        my $d = $r->hashes->first or return $c->render(openapi => { error => 'Not found' }, status => 404);
-
-        $c->render(openapi => $d);
-    });
+            $c->render(openapi => $d);
+        }
+    );
 }
 
 # sub AUTOLOAD {}

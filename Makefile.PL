@@ -20,19 +20,14 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'FindBin' => 0,
-        'EV' => 0,
-        'Mojolicious' => 0,
-        # 'Mojolicious::Plugin::Model' => 0,
+        'Mojolicious' => 7.50,
         'Mojo::JSON::MaybeXS' => 0,
         'Mojo::Pg' => 0,
-        'Mojolicious::Plugin::Bcrypt' => 0,
         'JSON::Validator' => 1.04,
-        'Mojolicious::Plugin::OpenAPI' => 1.15,
+        'Mojolicious::Plugin::OpenAPI' => 1.21,
+        'Crypt::Eksblowfish::Bcrypt' => 0,
         'Scalar::Util' => 0,
         'Scalar::Util::Numeric' => 0
-    },
-    CONFIGURE_REQUIRES => {
-        'ExtUtils::MakeMaker' => 6.64
     },
     TEST_REQUIRES => {
         'Test::More' => 0,

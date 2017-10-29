@@ -5,17 +5,23 @@ package Clovershell::Server::Controller::OpenAPI::Tag;
 
 use Mojo::Base 'Mojolicious::Controller';
 
+use Clovershell::Server::Model::Tags;
+
+has model => sub {
+    state $m = Clovershell::Server::Model::Tags->new(pg => shift->helpers->pg);
+};
+
 sub list {
     my $c = shift->openapi->valid_input or return;
 
     $c->render_later;
 
-    $c->pg->db->select('tags', [ qw/name description/ ], sub {
+    $c->model->list(cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
 
-        $c->render(openapi => [ $r->hashes->each ]);
+        $c->render(openapi => [ map { { name => $_->{name}, description => $_->{description} } } $r->hashes->each ]);
     });
 }
 
@@ -24,7 +30,7 @@ sub create {
 
     $c->render_later;
 
-    $c->pg->db->insert('tags', $c->validation->param('tag'), sub {
+    $c->model->create(data => $c->validation->param('tag'), cb => sub {
         my ($db, $err, $r) = @_;
 
         if ($err) {
@@ -42,7 +48,7 @@ sub read {
 
     $c->render_later;
 
-    $c->pg->db->select('tags', [ '*' ], { name => $c->validation->param('tagName') }, sub {
+    $c->model->read(name => $c->validation->param('tagName'), cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
@@ -60,7 +66,7 @@ sub update {
 
     $c->render_later;
 
-    $c->pg->db->update('tags', $c->validation->param('tag'), { name => $c->validation->param('tagName') }, sub {
+    $c->model->update(name => $c->validation->param('tagName'), data => $c->validation->param('tag'), cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
@@ -75,44 +81,15 @@ sub delete {
 
     $c->render_later;
 
-    my $db = $c->pg->db;
+    $c->model->delete(name => $c->validation->param('tagName'))->then(sub {
+        $c->render(openapi => undef);
+    })->catch(sub {
+        my $err = shift;
 
-    my $tag_name = $c->validation->param('tagName');
-
-    Mojo::IOLoop->delay(
-        sub {
-            $db->query('
-SELECT COUNT(r.*) AS count
-FROM clovers_tags r, tags t
-WHERE r.tag_id = t.id
-AND t.name = ?', $tag_name, shift->begin);
-        },
-        sub {
-            my ($d, $err, $r) = @_;
-
-            die { openapi => { error => $err }, status => 500 } if $err;
-
-            my $attached_clovers_count = $r->hash->{count};
-
-            die { openapi => { error => $attached_clovers_count . ' clovers are attached to this tag' }, status => 409} if $attached_clovers_count;
-
-            $db->delete('tags', { name => $tag_name }, $d->begin);
-        },
-        sub {
-            my ($d, $err, $r) = @_;
-
-            die { openapi => { error => $err }, status => 500 } if $err;
-            die { openapi => { error => 'Not found' }, status => 404 } unless $r->rows;
-
-            $c->render(openapi => undef);
-        }
-    )->catch(sub {
-        my ($d, $err) = @_;
-
-        if (ref $err eq 'HASH' and exists $err->{openapi}) {
-            $c->render(%{$err});
+        if (ref $err eq 'HASH' and exists $err->{error} and exists $err->{status}) {
+            $c->render(openapi => { error => $err->{error} }, status => $err->{status});
         } else {
-            $c->render({ openapi => { error => $err }, status => 500 });
+            $c->render(openapi => { error => $err }, status => 500);
         }
     });
 }

@@ -1,7 +1,7 @@
 # Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 # clovershell-server is licensed under the Apache License, Version 2.0
 
-package Clovershell::Server 0.1;
+package Clovershell::Server;
 
 use Mojo::Base 'Mojolicious';
 
@@ -10,6 +10,8 @@ use Mojo::Pg;
 use Mojo::URL;
 
 use Scalar::Util::Numeric 'isint';
+
+use Clovershell::Server::Model::Users;
 
 sub startup {
     my $self = shift;
@@ -27,8 +29,7 @@ sub startup {
 
     $self->helper(pg => sub { state $pg = Mojo::Pg->new(shift->config('pg')) });
     $self->helper('clovershell.openapi.url' => sub { state $p = shift->app->home->child('share', 'clovershell.json') });
-
-    $self->plugin(Bcrypt => { cost => 8 });
+    $self->helper('clovershell.bcrypt.cost' => sub { 8 });
 
     $self->pg->migrations->from_file($self->home->child('sql', 'migrations.sql'))->migrate;
 
@@ -50,16 +51,18 @@ sub startup {
 
         $c->render_later;
 
-        $c->pg->db->select('users', [ '*' ], { username => $username }, sub {
-            my ($db, $err, $r) = @_;
+        state $model = Clovershell::Server::Model::Users->new(
+            pg => $self->pg,
+            bcrypt_cost => $self->clovershell->bcrypt->cost,
+            maximum_users => $c->config('maximum_users')
+        );
 
-            return $c->render(openapi => { error => $err }, status => 500) if $err;
-
-            my $user = $r->hashes->first;
-
-            return $c->render(json => undef, status => 401) unless $user and $c->bcrypt_validate($url->password, $user->{password});
+        $model->check_password(data => { username => $username, password => $url->password })->then(sub {
+            $c->render(json => undef, status => 401) unless shift;
 
             $next->();
+        })->catch(sub {
+            $c->render(openapi => { error => shift }, status => 500);
         });
     });
 

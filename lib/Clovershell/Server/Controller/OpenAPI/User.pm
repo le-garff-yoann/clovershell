@@ -5,6 +5,18 @@ package Clovershell::Server::Controller::OpenAPI::User;
 
 use Mojo::Base 'Mojolicious::Controller';
 
+use Clovershell::Server::Model::Users;
+
+has model => sub {
+    my $c = shift;
+
+    state $m = Clovershell::Server::Model::Users->new(
+        pg => $c->helpers->pg,
+        bcrypt_cost => $c->helpers->clovershell->bcrypt->cost,
+        maximum_users => $c->helpers->config('maximum_users')
+    );
+};
+
 sub login {
     my $c = shift->openapi->valid_input or return;
 
@@ -12,16 +24,14 @@ sub login {
 
     my $userinfo = $c->validation->param('userinfo');
 
-    $c->pg->db->select('users', [ '*' ], { username => $userinfo->{username} }, sub {
-        my ($db, $err, $r) = @_;
+    $c->model->check_password(data => $userinfo)->then(sub {
+        my $r = shift;
 
-        return $c->render(openapi => { error => $err }, status => 500) if $err;
-
-        my $user = $r->hashes->first;
-
-        return $c->session(logged_in => 1)->session(username => $userinfo->{username})->render(openapi => undef, status => 201) if $user and $c->bcrypt_validate($userinfo->{password}, $user->{password});
+        return $c->session(logged_in => 1)->session(username => $userinfo->{username})->render(openapi => undef, status => 201) if $r;
 
         $c->render(openapi => undef, status => 401);
+    })->catch(sub {
+        $c->render(openapi => { error => shift }, status => 500);
     });
 }
 
@@ -38,53 +48,15 @@ sub register {
 
     $c->render_later;
 
-    my $maximum_users = $c->app->config('maximum_users');
+    $c->model->create(data => $c->validation->param('userinfo'))->then(sub {
+        $c->render(openapi => undef, status => 201);
+    })->catch(sub {
+        my $err = shift;
 
-    my $db = $c->pg->db;
-
-    Mojo::IOLoop->delay(
-        sub {
-            my $d = shift;
-
-            if ($maximum_users) {
-                $db->query('SELECT count(*) AS count FROM users', $d->begin);
-            } else {
-                $d->pass;
-            }
-        },
-        sub {
-            my $d = shift;
-
-            if ($maximum_users) {
-                my ($err, $r) = @_;
-
-                die { openapi => { error => $err }, status => 500 } if $err;
-
-                die { openapi => { error => 'Too many users already exists' }, status => 409 } if $r->hash->{count} >= $maximum_users;
-            }
-
-            my $userinfo = $c->validation->param('userinfo');
-
-            $db->insert('users', { username => $userinfo->{username}, password => $c->bcrypt($userinfo->{password}) }, $d->begin);
-        },
-        sub {
-            my ($d, $err, $r) = @_;
-
-            if ($err) {
-                die { openapi => { error => $err }, status => 409 } if $err =~ /already exists/i;
-
-                die { openapi => { error => $err }, status => 500 };
-            }
-
-            $c->render(openapi => undef, status => 201);
-        }
-    )->catch(sub {
-        my ($d, $err) = @_;
-
-        if (ref $err eq 'HASH' and exists $err->{openapi}) {
-            $c->render(%{$err});
+        if (ref $err eq 'HASH' and exists $err->{error} and exists $err->{status}) {
+            $c->render(openapi => { error => $err->{error} }, status => $err->{status});
         } else {
-            $c->render({ openapi => { error => $err }, status => 500 });
+            $c->render(openapi => { error => $err }, status => 500);
         }
     });
 }
