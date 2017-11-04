@@ -42,7 +42,7 @@ test:
       --link pg
       -e "TEST_PG_DSN=postgresql://pg:pg@pg/pg"
       $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-      prove -l
+      cpanm -v --test-only .
 
 release:
   stage: release
