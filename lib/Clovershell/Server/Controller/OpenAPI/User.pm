@@ -53,8 +53,8 @@ sub register {
     })->catch(sub {
         my $err = shift;
 
-        if (ref $err eq 'HASH' and exists $err->{error} and exists $err->{status}) {
-            $c->render(openapi => { error => $err->{error} }, status => $err->{status});
+        if (eval { $err->isa('Clovershell::Server::Exception::OpenAPI') }) {
+            $c->render(openapi => { error => $err->message->{error} }, status => $err->message->{status});
         } else {
             $c->render(openapi => { error => $err }, status => 500);
         }

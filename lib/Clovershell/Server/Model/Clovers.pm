@@ -9,6 +9,7 @@ use Scalar::Util::Numeric 'isint';
 use Mojo::IOLoop::Delay;
 
 use Clovershell::Server::Model::Users;
+use Clovershell::Server::Exception::OpenAPI;
 
 has 'pg';
 
@@ -21,7 +22,7 @@ FROM clovers';
 
     my @p;
 
-    if (ref $args{tags} eq 'ARRAY' and my @tags = @{$args{tags}}) {
+    if (ref $args{tags} eq 'ARRAY' and my @tags = @{$args{tags}}) { # google this: postgresql full text query across multiple colum
         my $filter = ' id IN (SELECT r.clover_id FROM clovers_tags r, tags t WHERE r.tag_id = t.id AND t.name = ?)';
 
         $q .= ' WHERE' . $filter;
@@ -140,9 +141,9 @@ sub create_play {
         sub {
             my ($d, $err, $r) = @_;
 
-            die { error => $err, status => 500 } if $err;
+            Clovershell::Server::Exception::OpenAPI->throw({ error => $err, status => 500 }) if $err;
 
-            my $clover = $r->hashes->first or die { error => 'Clover not found', status => 404 };
+            my $clover = $r->hashes->first or Clovershell::Server::Exception::OpenAPI->throw({ error => 'Clover not found', status => 404 });
 
             state $user_model = Clovershell::Server::Model::Users->new(pg => $self->pg);
 
@@ -158,10 +159,10 @@ sub create_play {
         sub {
             my ($d, $err1, $r1, $err2, $r2) = @_;
 
-            die { error => $err1, status => 500 } if $err1;
-            die { error => $err2, status => 500 } if $err2;
+            Clovershell::Server::Exception::OpenAPI->throw({ error => $err1, status => 500 }) if $err1;
+            Clovershell::Server::Exception::OpenAPI->throw({ error => $err2, status => 500 }) if $err2;
 
-            my $user = $r1->hashes->first or die { error => 'User not found', status => 404 };
+            my $user = $r1->hashes->first or Clovershell::Server::Exception::OpenAPI->throw({ error => 'User not found', status => 404 });
 
             $d->data(play_id => $r2->hash->{id});
 
@@ -169,7 +170,7 @@ sub create_play {
         }, sub {
             my ($d, $err, $r) = @_;
 
-            die { error => $err, status => 500 } if $err;
+            Clovershell::Server::Exception::OpenAPI->throw({ error => $err, status => 500 }) if $err;
 
             $tx->commit;
 

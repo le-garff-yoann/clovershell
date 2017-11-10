@@ -7,6 +7,8 @@ use Mojo::Base -base;
 
 use Scalar::Util::Numeric 'isint';
 
+use Clovershell::Server::Exception::OpenAPI;
+
 has 'pg';
 
 sub list {
@@ -55,19 +57,19 @@ sub delete {
         sub {
             my ($d, $err, $r) = @_;
 
-            die { error => $err, status => 500 } if $err;
+            Clovershell::Server::Exception::OpenAPI->throw({ error => $err, status => 500 }) if $err;
 
             my $attached_clovers_count = $r->hash->{counter};
 
-            die { error => $attached_clovers_count . ' clovers are attached to this tag', status => 409 } if $attached_clovers_count;
+            Clovershell::Server::Exception::OpenAPI->throw({ error => $attached_clovers_count . ' clovers are attached to this tag', status => 409 }) if $attached_clovers_count;
 
             $self->pg->db->delete('tags', { name => $args{name} }, $d->begin);
         },
         sub {
             my ($d, $err, $r) = @_;
 
-            die { error => $err, status => 500 } if $err;
-            die { error => 'Not found', status => 404 } unless $r->rows;
+            Clovershell::Server::Exception::OpenAPI->throw({ error => $err, status => 500 }) if $err;
+            Clovershell::Server::Exception::OpenAPI->throw({ error => 'Not found', status => 404 }) unless $r->rows;
         }
     );
 }

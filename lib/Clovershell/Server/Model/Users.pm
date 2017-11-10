@@ -8,6 +8,7 @@ use Mojo::Base -base;
 use Scalar::Util::Numeric 'isint';
 use Mojo::IOLoop::Delay;
 
+use Clovershell::Server::Exception::OpenAPI;
 use Clovershell::Server::Utils qw/bcrypt bcrypt_validate/;
 
 has 'pg';
@@ -57,9 +58,9 @@ sub create {
             if ($self->maximum_users) {
                 my ($err, $r) = @_;
 
-                die { error => $err, status => 500 } if $err;
+                Clovershell::Server::Exception::OpenAPI->throw({ error => $err, status => 500 }) if $err;
 
-                die { error => 'Too many users already exists', status => 409 } if $r->hash->{counter} >= $self->maximum_users;
+                Clovershell::Server::Exception::OpenAPI->throw({ error => 'Too many users already exists', status => 409 }) if $r->hash->{counter} >= $self->maximum_users;
             }
 
             $self->pg->db->insert('users', { username => $args{data}->{username}, password => bcrypt($args{data}->{password}, $self->bcrypt_cost) }, $d->begin);
@@ -68,9 +69,9 @@ sub create {
             my ($d, $err, $r) = @_;
 
             if ($err) {
-                die { error => $err, status => 409 } if $err =~ /already exists/i;
+                Clovershell::Server::Exception::OpenAPI->throw({ error => $err, status => 409 }) if $err =~ /already exists/i;
 
-                die { error => $err, status => 500 };
+                Clovershell::Server::Exception::OpenAPI->throw({ error => $err, status => 500 });
             }
         }
     );
