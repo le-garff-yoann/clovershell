@@ -1,5 +1,7 @@
 -- 1 up
 
+CREATE EXTENSION zombodb;
+
 CREATE TABLE clovers (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -8,7 +10,11 @@ CREATE TABLE clovers (
     score BIGINT DEFAULT 0 CHECK (score >= 0)
 );
 
-CREATE UNIQUE INDEX clovers_name ON clovers(name);
+CREATE UNIQUE INDEX idx_unique_clovers_name ON clovers(name);
+CREATE INDEX idx_zdb_clovers 
+    ON clovers
+    USING zombodb(zdb('clovers', clovers.ctid), zdb(clovers))
+    WITH (url='http://es:9200/'); --- FIXME: the URL should not be hardcoded
 
 CREATE TABLE tags (
     id SERIAL NOT NULL PRIMARY KEY,
@@ -16,7 +22,11 @@ CREATE TABLE tags (
     description TEXT
 );
 
-CREATE UNIQUE INDEX tags_name ON tags(name);
+CREATE UNIQUE INDEX idx_unique_tags_name ON tags(name);
+CREATE INDEX idx_zdb_tags
+    ON tags
+    USING zombodb(zdb('tags', tags.ctid), zdb(tags))
+    WITH (url='http://es:9200/'); --- FIXME: the URL should not be hardcoded
 
 CREATE TABLE plays (
     id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -29,10 +39,11 @@ CREATE TABLE plays (
     stdout TEXT,
     clover_id BIGSERIAL NOT NULL REFERENCES clovers(id) ON DELETE CASCADE
 );
- 
-CREATE INDEX plays_return_code ON plays(return_code);
-CREATE INDEX plays_started_at ON plays(started_at);
--- CREATE INDEX plays_ended_at ON plays(ended_at);
+
+CREATE INDEX idx_zdb_plays
+    ON plays
+    USING zombodb(zdb('plays', plays.ctid), zdb(plays))
+    WITH (url='http://es:9200/'); --- FIXME: the URL should not be hardcoded
 
 CREATE TABLE users (
     id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -40,7 +51,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL
 );
 
-CREATE UNIQUE INDEX users_name ON users(username);
+CREATE UNIQUE INDEX idx_unique_users_name ON users(username);
 
 CREATE TABLE clovers_tags (
     clover_id BIGINT NOT NULL REFERENCES clovers(id) ON DELETE CASCADE,

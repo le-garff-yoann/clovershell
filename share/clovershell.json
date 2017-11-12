@@ -84,6 +84,11 @@
         "tags": [ "clover" ],
         "parameters": [
           {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
             "name": "tag",
             "in": "query",
             "type": "array",
@@ -250,17 +255,9 @@
         "parameters": [
           { "$ref": "#/parameters/cloverName" },
           {
-            "name": "started_after",
+            "name": "query",
             "in": "query",
             "type": "string"
-          },
-          {
-            "name": "return_code",
-            "in": "query",
-            "type": "array",
-            "collectionFormat": "multi",
-            "items": { "type": "integer" },
-            "default": []
           }
         ],
         "responses": {
@@ -364,6 +361,13 @@
         "operationId": "listTags",
         "x-mojo-to": "Controller::OpenAPI::Tag#list",
         "tags": [ "tag" ],
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Self sufficient",

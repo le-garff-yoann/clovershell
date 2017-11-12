@@ -14,9 +14,18 @@ has 'pg';
 sub list {
     my ($self, %args) = @_;
 
-    my $q = 'SELECT * FROM tags';
+    my $q = '
+SELECT *
+FROM tags
+WHERE 1 = 1';
 
     my @p;
+
+    if (defined $args{query}) {
+        $q .= " AND zdb('tags', tags.ctid) ==> ?";
+
+        push @p, $args{query};
+    }
 
     if (isint($args{limit}) and $args{limit} > 0) {
         $q .= ' LIMIT ?';

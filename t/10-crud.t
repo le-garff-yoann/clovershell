@@ -52,6 +52,7 @@ $c->t_op('listClovers')->status_is(200)->json_is([]);
 $c->t_op('createClover', { clover => { name => 'c', description => '', template => 'echo 0' }})->status_is(201);
 $c->t_op('createClover', { clover => { name => 'c', description => '', template => 'echo 0' }})->status_is(409);
 $c->t_op('listClovers')->status_is(200)->json_is([{ name => 'c', description => '', score => 0 }]);
+$c->t_op('listClovers', { query => 'name: c' })->status_is(200)->json_is([{ name => 'c', description => '', score => 0 }]);
 $c->t_op('readClover', { cloverName => 'c' })->status_is(200)->json_is({ name => 'c', description => '', template => 'echo 0', score => 0 });
 $c->t_op('updateClover', { cloverName => 'c', clover => { description => 'PUT' }})->status_is(200);
 $c->t_op('readClover', { cloverName => 'c' })->status_is(200)->json_is({ name => 'c', description => 'PUT', template => 'echo 0', score => 0 });
@@ -62,6 +63,7 @@ $c->t_op('createTag', { tag => { name => 't', description => '' }})->status_is(2
 $c->t_op('createTag', { tag => { name => 't', description => '' }})->status_is(409);
 $c->t_op('createTag', { tag => { name => 'tt', description => '' }})->status_is(201);
 $c->t_op('listTags')->status_is(200)->json_is([{ name => 't', description => '' }, { name => 'tt', description => '' }]);
+$c->t_op('listTags', { query => 'name: t' })->status_is(200)->json_is([{ name => 't', description => '' }]);
 $c->t_op('readTag', { tagName => 't' })->status_is(200)->json_is({ name => 't', description => '' });
 $c->t_op('updateTag', { tagName => 't', tag => { description => 'PUT' }})->status_is(200);
 $c->t_op('readTag', { tagName => 't' })->status_is(200)->json_is({ name => 't', description => 'PUT' });
@@ -92,17 +94,15 @@ $c->t_op('registerUser', { userinfo => { username => 'uuu', password => 'p' }})-
 $c->t_op('loginUser', { userinfo => { username => 'u', password => 'p' }})->status_is(201);
 
 $c->t_op('createPlayForClover', { cloverName => 'c', play => { return_code => 0, started_at => '2017-01-01 00:00:00', stdout => '&1', stderr => '&2' }})->status_is(201);
-$c->t_op('listPlaysForClover', { cloverName => 'c', started_after => '2016-12-31 23:00:00' })->status_is(200)->json_like('/0/id', qr/^\d+$/)->json_is('/0/started_at' => '2017-01-01 00:00:00')->json_is('/0/return_code' => 0);
-$c->t_op('listPlaysForClover', { cloverName => 'c', started_after => '2017-01-01 00:00:01' })->status_is(200)->json_is([]);
-$c->t_op('listPlaysForClover', { cloverName => 'c', return_code => [ 1 ] })->status_is(200)->json_is([]);
 
-my $clover_id = $c->op('listPlaysForClover', { cloverName => 'c' })->result->json('/0/id');
+my $play_id = $c->op('listPlaysForClover', { cloverName => 'c' })->result->json('/0/id');
 
-$c->t_op('readPlayForClover', { cloverName => 'c', playId => $clover_id })->status_is(200)->json_is({ id => $clover_id, return_code => 0, started_at => '2017-01-01 00:00:00', stdout => '&1', stderr => '&2' });
+$c->t_op('listPlaysForClover', { cloverName => 'c', query => 'id: ' . $play_id })->status_is(200)->json_is([{ id => $play_id, return_code => 0, started_at => '2017-01-01 00:00:00' }]);
+$c->t_op('readPlayForClover', { cloverName => 'c', playId => $play_id })->status_is(200)->json_is({ id => $play_id, return_code => 0, started_at => '2017-01-01 00:00:00', stdout => '&1', stderr => '&2' });
 
 $c->t_op('logoutUser')->status_is(200);
 
-$c->t_op('readPlayForClover', { cloverName => 'c', playId => $clover_id })->status_is(200)->json_is({ id => $clover_id, return_code => 0, started_at => '2017-01-01 00:00:00' });
+$c->t_op('readPlayForClover', { cloverName => 'c', playId => $play_id })->status_is(200)->json_is({ id => $play_id, return_code => 0, started_at => '2017-01-01 00:00:00' });
 $c->t_op('readClover', { cloverName => 'c' })->status_is(200)->json_unlike('/score', qr/^0$/);
 
 $c->t_op('deleteTag', { tagName => 't' })->status_is(200);

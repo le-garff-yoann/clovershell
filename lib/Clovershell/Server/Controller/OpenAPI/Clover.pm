@@ -16,7 +16,7 @@ sub list {
 
     $c->render_later;
 
-    $c->model->list(tags => $c->validation->output->{tag}, cb => sub {
+    $c->model->list(query => $c->validation->param('query'), tags => $c->validation->output->{tag}, cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
@@ -146,8 +146,7 @@ sub list_plays {
 
     $c->model->list_plays(
         name => $c->validation->param('cloverName'),
-        started_after => $c->validation->param('started_after'),
-        return_codes => $c->validation->output->{return_code},
+        query => $c->validation->param('query'),
         cb => sub {
             my ($db, $err, $r) = @_;
 

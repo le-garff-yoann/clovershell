@@ -18,20 +18,23 @@ sub list {
 
     my $q = '
 SELECT *
-FROM clovers';
+FROM clovers
+WHERE 1 = 1';
 
     my @p;
 
-    if (ref $args{tags} eq 'ARRAY' and my @tags = @{$args{tags}}) { # google this: postgresql full text query across multiple colum
-        my $filter = ' id IN (SELECT r.clover_id FROM clovers_tags r, tags t WHERE r.tag_id = t.id AND t.name = ?)';
+    if (defined $args{query}) {
+        $q .= " AND zdb('clovers', clovers.ctid) ==> ?";
 
-        $q .= ' WHERE' . $filter;
+        push @p, $args{query};
+    }
 
-        push @p, shift @tags;
+    if (ref $args{tags} eq 'ARRAY') {
+        for (@{$args{tags}}) {
+            $q .= ' AND id IN (SELECT r.clover_id FROM clovers_tags r, tags t WHERE r.tag_id = t.id AND t.name = ?)';
 
-        $q .= ' AND' . $filter for @tags;
-
-        push @p, @tags;
+            push @p, $_;
+        }
     }
 
     if (isint($args{limit}) and $args{limit} > 0) {
@@ -40,7 +43,9 @@ FROM clovers';
         push @p, $args{limit}; 
     }
 
-    $self->pg->db->query($q . ' ORDER BY score ASC;', @p, $args{cb});
+    $q .= ' ORDER BY score ASC' unless defined $args{query};
+
+    $self->pg->db->query($q . ';', @p, $args{cb});
 }
 
 sub create {
@@ -110,19 +115,15 @@ AND c.name = ?';
 
     my @p = ($args{name});
 
-    if (defined $args{started_after}) {
-        push @p, $args{started_after};
+    if (defined $args{query}) {
+        $q .= " AND zdb('plays', p.ctid) ==> ?";
 
-        $q .= ' AND p.started_at::TIMESTAMP >= ?';
+        push @p, $args{query};
+    } else {
+        $q .= ' ORDER BY p.started_at ASC';
     }
 
-    if (ref $args{return_codes} eq 'ARRAY' and my @return_codes = @{$args{return_codes}}) {
-        push @p, @return_codes;
-
-        $q .= ' AND p.return_code IN (' . join(',', ('?') x @return_codes) . ')';
-    }
-
-    $self->pg->db->query($q . ' ORDER BY p.started_at ASC;', @p, $args{cb});
+    $self->pg->db->query($q . ';', @p, $args{cb});
 }
 
 sub create_play {
