@@ -15,22 +15,6 @@ has 'pg';
 has bcrypt_cost => undef; 
 has maximum_users => 0;
 
-sub list {
-    my ($self, %args) = @_;
-
-    my $q = 'SELECT * FROM users';
-
-    my @p;
-
-    if (isint($args{limit}) and $args{limit} > 0) {
-        $q .= ' LIMIT ?';
-
-        push @p, $args{limit}; 
-    }
-
-    $self->pg->db->query($q . ';', @p, $args{cb});
-}
-
 sub count {
     my ($self, %args) = @_;
 
