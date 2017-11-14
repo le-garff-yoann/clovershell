@@ -96,7 +96,7 @@ sub list_attached_tags {
 
     $c->render_later;
 
-    $c->model->list_attached_tags(name => $c->validation->param('cloverName'), cb => sub {
+    $c->model->list_attached_tags(query => $c->validation->param('query'), name => $c->validation->param('cloverName'), cb => sub {
         my ($db, $err, $r) = @_;
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;

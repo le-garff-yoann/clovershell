@@ -208,7 +208,14 @@
         "operationId": "listTagsAttachToClover",
         "x-mojo-to": "Controller::OpenAPI::Clover#list_attached_tags",
         "tags": [ "clover", "tag" ],
-        "parameters": [{ "$ref": "#/parameters/cloverName" }],
+        "parameters": [
+          { "$ref": "#/parameters/cloverName" },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Self sufficient",

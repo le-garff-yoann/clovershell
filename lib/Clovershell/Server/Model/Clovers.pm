@@ -75,12 +75,22 @@ sub delete {
 sub list_attached_tags {
     my ($self, %args) = @_;
 
-    $self->pg->db->query('
+    my $q = '
 SELECT t.*
 FROM clovers c, tags t, clovers_tags r
 WHERE c.id = r.clover_id
 AND r.tag_id = t.id
-AND c.name = ?;', $args{name}, $args{cb});
+AND c.name = ?';
+
+    my @p = ($args{name});
+
+    if (defined $args{query}) {
+        $q .= " AND zdb('tags', t.ctid) ==> ?";
+
+        push @p, $args{query};
+    }
+
+    $self->pg->db->query($q . ';', @p, $args{cb});
 }
 
 sub attach_tag {
