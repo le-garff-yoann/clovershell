@@ -76,7 +76,7 @@ sub list_attached_tags {
     my ($self, %args) = @_;
 
     $self->pg->db->query('
-SELECT t.name, t.description
+SELECT t.*
 FROM clovers c, tags t, clovers_tags r
 WHERE c.id = r.clover_id
 AND r.tag_id = t.id
@@ -108,7 +108,7 @@ sub list_plays {
     my ($self, %args) = @_;
 
     my $q = '
-SELECT p.id, p.started_at, p.return_code
+SELECT p.*
 FROM plays p, clovers c
 WHERE p.clover_id = c.id
 AND c.name = ?';

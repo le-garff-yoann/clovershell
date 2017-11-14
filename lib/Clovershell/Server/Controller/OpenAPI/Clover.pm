@@ -101,7 +101,7 @@ sub list_attached_tags {
 
         return $c->render(openapi => { error => $err }, status => 500) if $err;
 
-        $c->render(openapi => [ $r->hashes->each ]);
+        $c->render(openapi => [ map { { name => $_->{name}, description => $_->{description} } } $r->hashes->each ]);
     });
 }
 
@@ -152,7 +152,7 @@ sub list_plays {
 
             return $c->render(openapi => { error => $err }, status => 500) if $err;
 
-            $c->render(openapi => [ $r->hashes->each ]);
+            $c->render(openapi => [ map { { id => $_->{id}, return_code => $_->{return_code}, started_at => $_->{started_at} } } $r->hashes->each ]);
         }
     );
 }
