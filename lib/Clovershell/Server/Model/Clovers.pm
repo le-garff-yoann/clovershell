@@ -24,7 +24,7 @@ WHERE 1 = 1';
     my @p;
 
     if (defined $args{query}) {
-        $q .= " AND zdb('clovers', clovers.ctid) ==> ?";
+        $q .= " AND zdb('clovers', ctid) ==> ?";
 
         push @p, $args{query};
     }

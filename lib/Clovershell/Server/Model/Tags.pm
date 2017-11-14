@@ -22,7 +22,7 @@ WHERE 1 = 1';
     my @p;
 
     if (defined $args{query}) {
-        $q .= " AND zdb('tags', tags.ctid) ==> ?";
+        $q .= " AND zdb('tags', ctid) ==> ?";
 
         push @p, $args{query};
     }
