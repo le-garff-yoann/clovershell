@@ -33,6 +33,8 @@ WHERE 1 = 1';
         push @p, $args{limit}; 
     }
 
+    $q .= " ORDER BY zdb_score('tags', ctid) DESC" if defined $args{query};
+
     $self->pg->db->query($q . ';', @p, $args{cb});
 }
 

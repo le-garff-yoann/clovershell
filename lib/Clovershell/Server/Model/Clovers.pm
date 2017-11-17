@@ -43,9 +43,11 @@ WHERE 1 = 1';
         push @p, $args{limit}; 
     }
 
-    $q .= ' ORDER BY score ASC' unless defined $args{query};
+    $q .= ' ORDER BY ';
 
-    $self->pg->db->query($q . ';', @p, $args{cb});
+    $q .= defined $args{query} ? "zdb_score('clovers', ctid)" : 'score';
+
+    $self->pg->db->query($q . ' DESC;', @p, $args{cb});
 }
 
 sub create {
@@ -85,7 +87,7 @@ AND c.name = ?';
     my @p = ($args{name});
 
     if (defined $args{query}) {
-        $q .= " AND zdb('tags', t.ctid) ==> ?";
+        $q .= " AND zdb('tags', t.ctid) ==> ? ORDER BY zdb_score('tags', t.ctid) DESC";
 
         push @p, $args{query};
     }
@@ -130,7 +132,7 @@ AND c.name = ?';
 
         push @p, $args{query};
     } else {
-        $q .= ' ORDER BY p.started_at ASC';
+        $q .= ' ORDER BY p.started_at DESC';
     }
 
     $self->pg->db->query($q . ';', @p, $args{cb});
