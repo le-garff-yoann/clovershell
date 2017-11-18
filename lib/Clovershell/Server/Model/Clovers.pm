@@ -29,13 +29,11 @@ WHERE 1 = 1';
         push @p, $args{query};
     }
 
-    if (ref $args{tags} eq 'ARRAY') {
-        for (@{$args{tags}}) {
-            $q .= ' AND id IN (SELECT r.clover_id FROM clovers_tags r, tags t WHERE r.tag_id = t.id AND t.name = ?)';
+    if (defined $args{tag_query}) {
+        $q .= " AND id IN (SELECT r.clover_id FROM clovers_tags r, tags t WHERE r.tag_id = t.id AND zdb('tags', t.ctid) ==> ?)";
 
-            push @p, $_;
-        }
-    }
+        push @p, $args{tag_query};
+    } 
 
     if (isint($args{limit}) and $args{limit} > 0) {
         $q .= ' LIMIT ?';

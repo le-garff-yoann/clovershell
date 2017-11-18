@@ -75,7 +75,7 @@ $c->t_op('attachCloverToTag', { cloverName => 'c', tag => 'tt' })->status_is(200
 $c->t_op('attachCloverToTag', { cloverName => 'c', tag => 'c' })->status_is(404);
 $c->t_op('listTagsAttachToClover', { cloverName => 'c' })->status_is(200)->json_is([{ name => 't', description => 'PUT' }, { name => 'tt', description => '' }]);
 $c->t_op('listTagsAttachToClover', { cloverName => 'c', query => 'name: t' })->status_is(200)->json_is([{ name => 't', description => 'PUT' }]);
-$c->t_op('listClovers', { tag => [ 't', 'tt' ]})->status_is(200)->json_is([{ name => 'c', description => 'PUT', score => 0 }]);
+$c->t_op('listClovers', { tag_query => 'name: t and name: t' })->status_is(200)->json_is([{ name => 'c', description => 'PUT', score => 0 }]);
 
 $c->t_op('deleteTag', { tagName => 't' })->status_is(409);
 
@@ -83,7 +83,7 @@ $c->t_op('detachCloverFromTag', { cloverName => 'c', tag => 't' })->status_is(20
 $c->t_op('detachCloverFromTag', { cloverName => 'c', tag => 'tt' })->status_is(200);
 $c->t_op('detachCloverFromTag', { cloverName => 'c', tag => 'c' })->status_is(404);
 $c->t_op('listTagsAttachToClover', { cloverName => 'c' })->status_is(200)->json_is([]);
-$c->t_op('listClovers', { tag => [ 't' ]})->status_is(200)->json_is([]);
+$c->t_op('listClovers', { tag_query => 'name: t' })->status_is(200)->json_is([]);
 
 $c->t_op('listPlaysForClover', { cloverName => 'c' })->status_is(200)->json_is([]);
 $c->t_op('createPlayForClover', { cloverName => 'c', play => { return_code => 0, started_at => '2017-01-01 00:00:00', stdout => '', stderr => '' }})->status_is(401);

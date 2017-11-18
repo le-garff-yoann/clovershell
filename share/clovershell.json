@@ -89,12 +89,9 @@
             "type": "string"
           },
           {
-            "name": "tag",
+            "name": "tag_query",
             "in": "query",
-            "type": "array",
-            "collectionFormat": "multi",
-            "items": { "type": "string" },
-            "default": []
+            "type": "string"
           }
         ],
         "responses": {
