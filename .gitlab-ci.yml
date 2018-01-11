@@ -21,18 +21,22 @@ build:
 test:
   stage: test
   variables:
-    ELASTICSEARCH_IMAGE: metosin/zombodb-elasticsearch:latest
-    POSTGRES_IMAGE: metosin/zombodb-postgres:latest
+    ELASTICSEARCH_IMAGE: $CI_REGISTRY/clovershell/zombodb:elasticsearch-latest
+    POSTGRES_IMAGE: $CI_REGISTRY/clovershell/zombodb:postgres-latest
   script:
     - docker pull $ELASTICSEARCH_IMAGE
     - docker pull $POSTGRES_IMAGE
-    - docker run -d --name es $ELASTICSEARCH_IMAGE
+    - >
+      docker run -d --name es
+      -e "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      $ELASTICSEARCH_IMAGE
     - sleep 10 
     - >
       docker run -d --name pg --link es
       -e "POSTGRES_USER=pg"
       -e "POSTGRES_PASSWORD=pg"
       $POSTGRES_IMAGE
+      postgres -c zombodb.default_elasticsearch_url=http://es:9200/
     - sleep 10
     - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - >

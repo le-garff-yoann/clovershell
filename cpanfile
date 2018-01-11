@@ -14,5 +14,5 @@ recommends 'Cpanel::JSON::XS';
 on test => sub {
     requires 'Test::More';
     requires 'Test::Mojo';
-    requires 'OpenAPI::Client';
+    requires 'OpenAPI::Client', '== 0.09';
 };

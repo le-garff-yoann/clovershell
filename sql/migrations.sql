@@ -14,7 +14,7 @@ CREATE UNIQUE INDEX idx_unique_clovers_name ON clovers(name);
 CREATE INDEX idx_zdb_clovers 
     ON clovers
     USING zombodb(zdb('clovers', clovers.ctid), zdb(clovers))
-    WITH (url='http://es:9200/'); --- FIXME: the URL should not be hardcoded
+    WITH (url='default');
 
 CREATE TABLE tags (
     id SERIAL NOT NULL PRIMARY KEY,
@@ -26,7 +26,7 @@ CREATE UNIQUE INDEX idx_unique_tags_name ON tags(name);
 CREATE INDEX idx_zdb_tags
     ON tags
     USING zombodb(zdb('tags', tags.ctid), zdb(tags))
-    WITH (url='http://es:9200/'); --- FIXME: the URL should not be hardcoded
+    WITH (url='default');
 
 CREATE TABLE plays (
     id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -43,7 +43,7 @@ CREATE TABLE plays (
 CREATE INDEX idx_zdb_plays
     ON plays
     USING zombodb(zdb('plays', plays.ctid), zdb(plays))
-    WITH (url='http://es:9200/'); --- FIXME: the URL should not be hardcoded
+    WITH (url='default');
 
 CREATE TABLE users (
     id BIGSERIAL NOT NULL PRIMARY KEY,
