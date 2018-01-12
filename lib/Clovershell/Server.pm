@@ -8,6 +8,7 @@ use Mojo::Base 'Mojolicious';
 use Mojo::JSON::MaybeXS;
 use Mojo::Pg;
 use Mojo::URL;
+use Mojo::JSON 'encode_json';
 
 use Scalar::Util::Numeric 'isint';
 
@@ -92,7 +93,7 @@ sub startup {
 
             $d = { error => join "\n", map { $_->{path} . ' - ' . $_->{message} } @{$d->{errors}} } if ref $d eq 'HASH' and ref $d->{errors} eq 'ARRAY';
 
-            Mojolicious::Plugin::OpenAPI::_render_json($c, $d);
+            encode_json($d);
         }
     });
 }

@@ -20,11 +20,11 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'FindBin' => 0,
-        'Mojolicious' => 7.50,
+        'Mojolicious' => 0,
         'Mojo::JSON::MaybeXS' => 0,
         'Mojo::Pg' => 0,
-        'JSON::Validator' => 1.04,
-        'Mojolicious::Plugin::OpenAPI' => 1.21,
+        'JSON::Validator' => 0,
+        'Mojolicious::Plugin::OpenAPI' => 0,
         'Crypt::Eksblowfish::Bcrypt' => 0,
         'Scalar::Util' => 0,
         'Scalar::Util::Numeric' => 0
