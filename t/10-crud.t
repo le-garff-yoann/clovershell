@@ -6,7 +6,7 @@ use Mojo::Base -strict;
 use Test::More;
 use Test::Mojo;
 
-use OpenAPI::Client;
+use OpenAPI::Client v0.14;
 
 plan skip_all => 'Assign a PostgreSQL connection string (eg., postgresql://postgres:postgres@localhost/t_clovershell) to $TEST_PG_DSN' unless defined $ENV{TEST_PG_DSN};
 
@@ -26,9 +26,9 @@ package t::Clovershell::OpenAPI::Client {
     sub op {
         my ($self, $op, @args) = @_;
 
-        my $tx; $self->{o}->$op(@args, sub {
-            $tx = $_[1];
-        });
+        my $tx;
+        
+        $self->{o}->call($op, @args, sub { $tx = $_[1] });
 
         $self->{t}->ua->server->ioloop->one_tick until $tx;
 
