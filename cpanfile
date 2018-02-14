@@ -2,7 +2,7 @@ requires 'FindBin';
 requires 'Mojolicious', '>= 7.51', '< 8';
 requires 'Mojo::JSON::MaybeXS';
 requires 'Mojo::Pg';
-requires 'JSON::Validator';
+requires 'JSON::Validator', '>= 2.03';
 requires 'Mojolicious::Plugin::OpenAPI', '>= 1.23';
 requires 'Crypt::Eksblowfish::Bcrypt';
 requires 'Scalar::Util';
