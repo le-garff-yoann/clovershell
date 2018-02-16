@@ -145,6 +145,8 @@ sub create_play {
 
     my $delay = Mojo::IOLoop::Delay->new;
 
+    my $play_id;
+
     $delay->steps(
         sub {
             $self->read(name => $args{name}, cb => shift->begin);
@@ -175,9 +177,9 @@ sub create_play {
 
             my $user = $r1->hashes->first or Clovershell::Server::Exception::OpenAPI->throw({ error => 'User not found', status => 404 });
 
-            $d->data(play_id => $r2->hash->{id});
+            $play_id = $r2->hash->{id};
 
-            $db->insert('plays_users', { 'play_id' => $d->data('play_id'), 'user_id' => $user->{id} }, $d->begin);
+            $db->insert('plays_users', { 'play_id' => $play_id, 'user_id' => $user->{id} }, $d->begin);
         }, sub {
             my ($d, $err, $r) = @_;
 
@@ -185,7 +187,7 @@ sub create_play {
 
             $tx->commit;
 
-            $d->begin->(undef, $d->data('play_id'));
+            $d->begin->(undef, $play_id);
         }
     );
 }
