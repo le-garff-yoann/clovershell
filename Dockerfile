@@ -1,4 +1,4 @@
-FROM perl:5.26
+FROM perl:5.28
 
 MAINTAINER Yoann Le Garff (le-garff-yoann) <pe.weeble@yahoo.fr>
 
