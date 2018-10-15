@@ -1,19 +1,15 @@
-#!perl
-
-# Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
+# Copyright (C) 2015-2018 Yoann Le Garff
 # clovershell is licensed under the Apache License, Version 2.0
 
-use Mojo::Base -strict;
+package Clovershell::Exception::OpenAPI;
 
-use FindBin;
+use Mojo::Base 'Mojo::Exception';
 
-BEGIN {
-    unshift @INC, $FindBin::Bin . '/../lib';
-}
+# sub AUTOLOAD {}
 
-use Mojolicious::Commands;
+# sub DESTROY {}
 
-Mojolicious::Commands->start_app('Clovershell');
+1;
 
 __END__
 
@@ -23,7 +19,7 @@ __END__
 
 =head1 NAME
 
-clovershell - Run Clovershell
+Clovershell::Exception::OpenAPI
 
 =head1 COPYRIGHT
 

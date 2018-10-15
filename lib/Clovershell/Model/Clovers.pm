@@ -1,15 +1,15 @@
 # Copyright (C) 2015-2018 Yoann Le Garff
-# clovershell-server is licensed under the Apache License, Version 2.0
+# clovershell is licensed under the Apache License, Version 2.0
 
-package Clovershell::Server::Model::Clovers;
+package Clovershell::Model::Clovers;
 
 use Mojo::Base -base;
 
 use Scalar::Util::Numeric 'isint';
 use Mojo::IOLoop::Delay;
 
-use Clovershell::Server::Model::Users;
-use Clovershell::Server::Exception::OpenAPI;
+use Clovershell::Model::Users;
+use Clovershell::Exception::OpenAPI;
 
 has 'pg';
 
@@ -154,11 +154,11 @@ sub create_play {
         sub {
             my ($d, $err, $r) = @_;
 
-            Clovershell::Server::Exception::OpenAPI->throw({ error => $err, status => 500 }) if $err;
+            Clovershell::Exception::OpenAPI->throw({ error => $err, status => 500 }) if $err;
 
-            my $clover = $r->hashes->first or Clovershell::Server::Exception::OpenAPI->throw({ error => 'Clover not found', status => 404 });
+            my $clover = $r->hashes->first or Clovershell::Exception::OpenAPI->throw({ error => 'Clover not found', status => 404 });
 
-            state $user_model = Clovershell::Server::Model::Users->new(pg => $self->pg);
+            state $user_model = Clovershell::Model::Users->new(pg => $self->pg);
 
             $user_model->read(name => $args{username}, cb => $d->begin);
 
@@ -172,10 +172,10 @@ sub create_play {
         sub {
             my ($d, $err1, $r1, $err2, $r2) = @_;
 
-            Clovershell::Server::Exception::OpenAPI->throw({ error => $err1, status => 500 }) if $err1;
-            Clovershell::Server::Exception::OpenAPI->throw({ error => $err2, status => 500 }) if $err2;
+            Clovershell::Exception::OpenAPI->throw({ error => $err1, status => 500 }) if $err1;
+            Clovershell::Exception::OpenAPI->throw({ error => $err2, status => 500 }) if $err2;
 
-            my $user = $r1->hashes->first or Clovershell::Server::Exception::OpenAPI->throw({ error => 'User not found', status => 404 });
+            my $user = $r1->hashes->first or Clovershell::Exception::OpenAPI->throw({ error => 'User not found', status => 404 });
 
             $play_id = $r2->hash->{id};
 
@@ -183,7 +183,7 @@ sub create_play {
         }, sub {
             my ($d, $err, $r) = @_;
 
-            Clovershell::Server::Exception::OpenAPI->throw({ error => $err, status => 500 }) if $err;
+            Clovershell::Exception::OpenAPI->throw({ error => $err, status => 500 }) if $err;
 
             $tx->commit;
 
@@ -232,7 +232,7 @@ __END__
 
 =head1 NAME
 
-Clovershell::Server::Model::Clovers
+Clovershell::Model::Clovers
 
 =head1 COPYRIGHT
 
@@ -240,6 +240,6 @@ Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 
 =head1 LICENSE
 
-clovershell-server is licensed under the Apache License, Version 2.0
+clovershell is licensed under the Apache License, Version 2.0
 
 =cut

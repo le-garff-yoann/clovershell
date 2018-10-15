@@ -2,9 +2,9 @@ FROM perl:5.26
 
 MAINTAINER Yoann Le Garff (le-garff-yoann) <pe.weeble@yahoo.fr>
 
-COPY . /opt/clovershell-server
+COPY . /opt/clovershell
 
-WORKDIR /opt/clovershell-server
+WORKDIR /opt/clovershell
 
 RUN \
     apt-get install -y libpq-dev && \

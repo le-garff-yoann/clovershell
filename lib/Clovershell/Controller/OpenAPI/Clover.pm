@@ -1,14 +1,14 @@
 # Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
-# clovershell-server is licensed under the Apache License, Version 2.0
+# clovershell is licensed under the Apache License, Version 2.0
 
-package Clovershell::Server::Controller::OpenAPI::Clover;
+package Clovershell::Controller::OpenAPI::Clover;
 
 use Mojo::Base 'Mojolicious::Controller';
 
-use Clovershell::Server::Model::Clovers;
+use Clovershell::Model::Clovers;
 
 has model => sub {
-    state $m = Clovershell::Server::Model::Clovers->new(pg => shift->helpers->pg);
+    state $m = Clovershell::Model::Clovers->new(pg => shift->helpers->pg);
 };
 
 sub list {
@@ -171,7 +171,7 @@ sub create_play {
     })->catch(sub {
         my $err = shift;
 
-        if (eval { $err->isa('Clovershell::Server::Exception::OpenAPI') }) {
+        if (eval { $err->isa('Clovershell::Exception::OpenAPI') }) {
             $c->render(openapi => { error => $err->message->{error} }, status => $err->message->{status});
         } else {
             $c->render(openapi => { error => $err }, status => 500);
@@ -214,7 +214,7 @@ __END__
 
 =head1 NAME
 
-Clovershell::Server::Controller::OpenAPI::Clover
+Clovershell::Controller::OpenAPI::Clover
 
 =head1 COPYRIGHT
 
@@ -222,6 +222,6 @@ Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 
 =head1 LICENSE
 
-clovershell-server is licensed under the Apache License, Version 2.0
+clovershell is licensed under the Apache License, Version 2.0
 
 =cut

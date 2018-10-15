@@ -1,14 +1,16 @@
-# clovershell-server
+# clovershell
 
 ## Installation and usage
 
-http://mojolicious.org/perldoc/Mojolicious/Guides/Cookbook#DEPLOYMENT
+```bash
+docker pull clovershell/clovershell
+```
 
 ## Configuration
 
-The configuration is done via [this file](clovershell-server.conf).
+Look at the *clovershell.conf* and *Dockerfile* files.
 
-**Be careful**, PostgreSQL requires to be installed with the [ZomboDB](https://www.zombodb.com/) extension.
+**BE CAREFUL**, PostgreSQL requires to be installed with the [ZomboDB](https://www.zombodb.com/) extension.
 
 ## Copyright
 
@@ -16,4 +18,4 @@ Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 
 ## License
 
-clovershell-server is licensed under the Apache License, Version 2.0
+clovershell is licensed under the Apache License, Version 2.0

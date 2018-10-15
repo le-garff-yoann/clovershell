@@ -1,7 +1,7 @@
 # Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
-# clovershell-server is licensed under the Apache License, Version 2.0
+# clovershell is licensed under the Apache License, Version 2.0
 
-package Clovershell::Server;
+package Clovershell;
 
 use Mojo::Base 'Mojolicious';
 
@@ -12,7 +12,7 @@ use Mojo::JSON 'encode_json';
 
 use Scalar::Util::Numeric 'isint';
 
-use Clovershell::Server::Model::Users;
+use Clovershell::Model::Users;
 
 sub startup {
     my $self = shift;
@@ -29,7 +29,7 @@ sub startup {
     $self->config('pg') // die 'pg must be defined';
 
     $self->helper(pg => sub { state $pg = Mojo::Pg->new(shift->config('pg')) });
-    $self->helper('clovershell.openapi.url' => sub { state $p = shift->app->home->child('share', 'clovershell.json') });
+    $self->helper('clovershell.openapi.url' => sub { state $p = shift->app->home->child('public', 'api.json') });
     $self->helper('clovershell.bcrypt.cost' => sub { 8 });
 
     $self->pg->migrations->from_file($self->home->child('sql', 'migrations.sql'))->migrate;
@@ -52,7 +52,7 @@ sub startup {
 
         $c->render_later;
 
-        state $model = Clovershell::Server::Model::Users->new(
+        state $model = Clovershell::Model::Users->new(
             pg => $self->pg,
             bcrypt_cost => $self->clovershell->bcrypt->cost,
             maximum_users => $c->config('maximum_users')
@@ -87,7 +87,7 @@ sub startup {
 
     $self->plugin(OpenAPI => {
         url => $self->clovershell->openapi->url,
-        coerce => {}, # empty hashtable is for "coerce nothing"
+        coerce => {}, # Empty hashtable is for "coerce nothing"
         renderer => sub {
             my ($c, $d) = @_;
 
@@ -112,7 +112,7 @@ __END__
 
 =head1 NAME
 
-Clovershell::Server
+Clovershell
 
 =head1 COPYRIGHT
 
@@ -120,6 +120,6 @@ Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
 
 =head1 LICENSE
 
-clovershell-server is licensed under the Apache License, Version 2.0
+clovershell is licensed under the Apache License, Version 2.0
 
 =cut

@@ -1,5 +1,5 @@
 # Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
-# clovershell-server is licensed under the Apache License, Version 2.0
+# clovershell is licensed under the Apache License, Version 2.0
 
 use strict;
 use warnings;
@@ -7,9 +7,9 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME => 'Clovershell::Server',
-    VERSION_FROM => 'lib/Clovershell/Server.pm',
-    ABSTRACT => 'clovershell-server',
+    NAME => 'Clovershell',
+    VERSION_FROM => 'lib/Clovershell.pm',
+    ABSTRACT => 'clovershell',
     AUTHOR => 'Yoann Le Garff',
     LICENSE => 'Apache License, Version 2.0',
     META_MERGE => {

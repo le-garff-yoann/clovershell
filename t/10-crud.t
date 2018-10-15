@@ -1,5 +1,5 @@
 # Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
-# clovershell-server is licensed under the Apache License, Version 2.0
+# clovershell is licensed under the Apache License, Version 2.0
 
 use Mojo::Base -strict;
 
@@ -16,7 +16,7 @@ package t::Clovershell::OpenAPI::Client {
 
         my %o = ( t => Test::Mojo->new(@_) );
 
-        $o{o} = OpenAPI::Client->new($o{t}->app->clovershell->openapi->url, { # couldn't use a url: the ua used in the constructor block the event loop that is running the test server...
+        $o{o} = OpenAPI::Client->new($o{t}->app->clovershell->openapi->url, { # Couldn't use a url: the ua used in the constructor block the event loop that is running the test server...
             app => $o{t}->ua->server->app
         });
 
@@ -42,7 +42,7 @@ package t::Clovershell::OpenAPI::Client {
     }
 };
 
-my $c = t::Clovershell::OpenAPI::Client->new('Clovershell::Server' => {
+my $c = t::Clovershell::OpenAPI::Client->new('Clovershell' => {
     maximum_users => 2,
     pg => $ENV{TEST_PG_DSN},
     secrets => [ 's3cret' ]
