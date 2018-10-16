@@ -5,7 +5,6 @@ package Clovershell;
 
 use Mojo::Base 'Mojolicious';
 
-use Mojo::JSON::MaybeXS;
 use Mojo::Pg;
 use Mojo::URL;
 use Mojo::JSON 'encode_json';

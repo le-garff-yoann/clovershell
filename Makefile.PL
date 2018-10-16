@@ -21,7 +21,6 @@ WriteMakefile(
     PREREQ_PM => {
         'FindBin' => 0,
         'Mojolicious' => 0,
-        'Mojo::JSON::MaybeXS' => 0,
         'Mojo::Pg' => 0,
         'JSON::Validator' => 0,
         'Mojolicious::Plugin::OpenAPI' => 0,
