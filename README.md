@@ -1,5 +1,7 @@
 # clovershell
 
+[![pipeline status](https://gitlab.com/le-garff-yoann/clovershell/badges/master/pipeline.svg)](https://gitlab.com/le-garff-yoann/clovershell/pipelines)
+
 ## Installation and usage
 
 ```bash
