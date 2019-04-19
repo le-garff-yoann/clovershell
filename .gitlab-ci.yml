@@ -21,8 +21,8 @@ build:
 test:
   stage: test
   variables:
-    ELASTICSEARCH_IMAGE: $CI_REGISTRY/clovershell/zombodb:elasticsearch-latest
-    POSTGRES_IMAGE: $CI_REGISTRY/clovershell/zombodb:postgres-latest
+    ELASTICSEARCH_IMAGE: $CI_REGISTRY/le-garff-yoann/zombodb:elasticsearch-latest
+    POSTGRES_IMAGE: $CI_REGISTRY/le-garff-yoann/zombodb:postgres-latest
   script:
     - docker pull $ELASTICSEARCH_IMAGE
     - docker pull $POSTGRES_IMAGE

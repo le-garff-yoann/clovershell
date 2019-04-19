@@ -3,7 +3,7 @@
 ## Installation and usage
 
 ```bash
-docker pull clovershell/clovershell
+docker pull registry.gitlab.com/le-garff-yoann/clovershell
 ```
 
 ## Configuration
