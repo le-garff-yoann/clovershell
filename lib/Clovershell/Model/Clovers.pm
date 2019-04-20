@@ -1,6 +1,3 @@
-# Copyright (C) 2015-2018 Yoann Le Garff
-# clovershell is licensed under the Apache License, Version 2.0
-
 package Clovershell::Model::Clovers;
 
 use Mojo::Base -base;
@@ -194,7 +191,7 @@ sub create_play {
 
 sub read_play {
     my ($self, %args) = @_;
-
+    
     my $q = 'SELECT p.id, p.started_at, p.return_code';
     my @p = ($args{play_id}, $args{name});
 
@@ -223,8 +220,6 @@ AND c.name = ?;';
 # sub DESTROY {}
 
 1;
-
-__END__
 
 =pod
 

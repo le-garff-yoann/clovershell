@@ -1,6 +1,3 @@
-# Copyright (C) 2015-2018 Yoann Le Garff
-# clovershell is licensed under the Apache License, Version 2.0
-
 package Clovershell::Model::Users;
 
 use Mojo::Base -base;
@@ -93,8 +90,6 @@ sub check_password {
 # sub DESTROY {}
 
 1;
-
-__END__
 
 =pod
 

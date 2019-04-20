@@ -1,6 +1,3 @@
-# Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
-# clovershell is licensed under the Apache License, Version 2.0
-
 use Mojo::Base -strict;
 
 use Test::More;
@@ -117,5 +114,3 @@ done_testing();
 END {
     $c->{t}->app->pg->db->delete('users') if $c;
 }
-
-__END__

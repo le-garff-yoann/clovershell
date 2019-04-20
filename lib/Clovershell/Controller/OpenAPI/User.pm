@@ -1,6 +1,3 @@
-# Copyright (C) 2015-2018 Yoann Le Garff
-# clovershell is licensed under the Apache License, Version 2.0
-
 package Clovershell::Controller::OpenAPI::User;
 
 use Mojo::Base 'Mojolicious::Controller';
@@ -66,8 +63,6 @@ sub register {
 # sub DESTROY {}
 
 1;
-
-__END__
 
 =pod
 

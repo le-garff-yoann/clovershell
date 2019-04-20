@@ -1,6 +1,3 @@
-# Copyright (C) 2017-2018 Yoann Le Garff, Boquet Nicolas and Yann Le Bras
-# clovershell is licensed under the Apache License, Version 2.0
-
 use strict;
 use warnings;
 
@@ -34,5 +31,3 @@ WriteMakefile(
         'OpenAPI::Client' => 0
     }
 );
-
-__END__

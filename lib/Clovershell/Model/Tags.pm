@@ -1,6 +1,3 @@
-# Copyright (C) 2015-2018 Yoann Le Garff
-# clovershell is licensed under the Apache License, Version 2.0
-
 package Clovershell::Model::Tags;
 
 use Mojo::Base -base;
@@ -100,8 +97,6 @@ AND t.name = ?', $args{name}, $args{cb});
 # sub DESTROY {}
 
 1;
-
-__END__
 
 =pod
 
